@@ -1,8 +1,8 @@
 ### model
-model_name_or_path: /home/xiarui/.cache/modelscope/hub/models/Qwen/Qwen-2/Qwen3-VL-2B-Instruct
+model_name_or_path: /home/xiarui/.cache/modelscope/hub/models/Qwen/Qwen3-VL-2B-Instruct
 image_max_pixels: 262144
 video_max_pixels: 16384
-trust_remote_code: true
+trust_remote_code: true 
 
 ### method
 stage: sft
