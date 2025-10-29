@@ -1,0 +1,4 @@
+model_name_or_path: /home/xiarui/.cache/modelscope/hub/models/Qwen/Qwen3-0.6B
+template: qwen3
+infer_backend: huggingface  # choices: [huggingface, vllm, sglang]
+trust_remote_code: true
