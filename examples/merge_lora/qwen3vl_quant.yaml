@@ -1,0 +1,16 @@
+### Note: DO NOT use quantized model or quantization_bit when merging lora adapters
+
+### model
+model_name_or_path: /home/xiarui/projects/LLaMA-Factory/output/qwen3vl_2b_thinking_lora_sft_20251101_gbs32_lr1e-4_ep20_lk32
+template: qwen3_vl
+trust_remote_code: true
+
+### export
+export_dir: /home/xiarui/projects/LLaMA-Factory/output/qwen3vl_2b_thinking_lora_sft_20251101_gbs32_lr1e-4_ep20_lk32_gptq
+export_size: 5
+export_device: cpu  # choices: [cpu, auto]
+export_legacy_format: false
+
+quantization_method: gptq
+export_quantization_bit: 4
+export_quantization_dataset: data/c4_demo.jsonl

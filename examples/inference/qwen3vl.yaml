@@ -1,0 +1,4 @@
+model_name_or_path: /home/xiarui/projects/LLaMA-Factory/output/qwen3vl_2b_instruct_lora_sft_20251031_gbs32_lr1e-4_ep80_lk32
+template: qwen3_vl
+infer_backend: huggingface  # choices: [huggingface, vllm, sglang]
+trust_remote_code: true

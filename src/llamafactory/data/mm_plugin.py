@@ -1669,7 +1669,7 @@ class Qwen3VLPlugin(Qwen2VLPlugin):
                 num_video_tokens += 1
 
             message["content"] = content
-
+            
         return messages
 
 
@@ -2071,3 +2071,100 @@ def get_mm_plugin(
         raise ValueError(f"Multimodal plugin `{name}` not found.")
 
     return PLUGINS[name](image_token, video_token, audio_token, **kwargs)
+
+
+@dataclass
+class SmolvlmPlugin(BasePlugin):
+    @override
+    def _preprocess_image(self, image: "ImageObject", **kwargs) -> "ImageObject":
+        image = super()._preprocess_image(image, **kwargs)
+
+        # 图像尺寸调整逻辑
+        # if min(image.width, image.height) < 28:
+        #     width, height = max(image.width, 28), max(image.height, 28)
+        #     image = image.resize((width, height))
+
+        # if image.width / image.height > 200:
+        #     width, height = image.height * 180, image.height
+        #     image = image.resize((width, height))
+
+        # if image.height / image.width > 200:
+        #     width, height = image.width, image.width * 180
+        #     image = image.resize((width, height))
+
+        return image
+
+    @override
+    def _get_mm_inputs(
+        self,
+        images: list["ImageInput"],
+        videos: list["VideoInput"],
+        audios: list["AudioInput"],
+        processor: "MMProcessor",
+    ) -> dict[str, "torch.Tensor"]:
+        # 只处理图像，完全忽略视频和音频
+        image_processor: BaseImageProcessor = getattr(processor, "image_processor", None)
+        mm_inputs = {}
+        
+        if len(images) != 0:
+            images = self._regularize_images(
+                images,
+                image_max_pixels=getattr(processor, "image_max_pixels", 512 * 512),
+                image_min_pixels=getattr(processor, "image_min_pixels", 32 * 32),
+            )["images"]
+            mm_inputs.update(image_processor(images, return_tensors="pt"))
+
+        return mm_inputs
+
+    @override
+    def process_messages(
+        self,
+        messages: list[dict[str, str]],
+        images: list["ImageInput"],
+        videos: list["VideoInput"],
+        audios: list["AudioInput"],
+        processor: Optional["MMProcessor"],
+    ) -> list[dict[str, str]]:
+        # 如果有视频输入，直接报错
+        if len(videos) > 0:
+            raise ValueError("Video inputs are not supported in this image-only plugin.")
+            
+        self._validate_input(processor, images, videos, audios)
+        self._validate_messages(messages, images, videos, audios)
+        
+        messages = deepcopy(messages)
+
+        if len(images) != 0:
+            images = self._regularize_images(
+                images,
+                image_max_pixels=getattr(processor, "image_max_pixels", 512 * 512),
+                image_min_pixels=getattr(processor, "image_min_pixels", 32 * 32),
+            )["images"]
+
+        num_image_tokens = 0
+        for message in messages:
+            content = message["content"]
+            
+            # 使用临时唯一标识符避免递归替换
+            temp_placeholder = "___TEMP_IMAGE_PLACEHOLDER___"
+            temp_contents = []
+            
+            # 第一次替换：将真实占位符替换为临时标识符
+            while IMAGE_PLACEHOLDER in content:
+                image_token = processor(text=IMAGE_PLACEHOLDER, images=[images[num_image_tokens]], return_tensors="pt")
+                image_text = processor.decode(image_token["input_ids"][0])
+                
+                # 将image_text中的真实占位符替换为临时标识符
+                safe_image_text = image_text.replace(IMAGE_PLACEHOLDER, temp_placeholder)
+                content = content.replace(IMAGE_PLACEHOLDER, safe_image_text, 1)
+                num_image_tokens += 1
+            
+            # 第二次替换：将临时标识符恢复为真实占位符
+            content = content.replace(temp_placeholder, IMAGE_PLACEHOLDER)
+            
+            message["content"] = content
+
+        return messages
+
+register_mm_plugin("smolvlm", SmolvlmPlugin)
+

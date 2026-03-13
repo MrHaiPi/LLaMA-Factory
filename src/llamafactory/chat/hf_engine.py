@@ -237,6 +237,9 @@ class HuggingfaceEngine(BaseEngine):
             audios,
             input_kwargs,
         )
+
+        print("decode prompt:", processor.decode(gen_kwargs["inputs"][0]))
+
         generate_output = model.generate(**gen_kwargs)
         if isinstance(generate_output, tuple):
             generate_output = generate_output[1][0]  # post-process the minicpm_o output
@@ -292,6 +295,9 @@ class HuggingfaceEngine(BaseEngine):
             audios,
             input_kwargs,
         )
+        
+        print("decode prompt:", processor.decode(gen_kwargs["inputs"][0]))
+
         streamer = TextIteratorStreamer(
             tokenizer,
             skip_prompt=True,
@@ -344,7 +350,6 @@ class HuggingfaceEngine(BaseEngine):
     ) -> list["Response"]:
         if not self.can_generate:
             raise ValueError("The current model does not support `chat`.")
-
         input_args = (
             self.model,
             self.tokenizer,

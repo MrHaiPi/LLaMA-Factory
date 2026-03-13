@@ -1250,10 +1250,24 @@ register_template(
     format_system=StringFormatter(slots=["<|im_start|>system\n{{content}}<|im_end|>\n"]),
     format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
     default_system=(
-        "你是书生·万象，英文名是InternVL，是由上海人工智能实验室、清华大学及多家合作单位联合开发的多模态大语言模型。"
+        # "你是书生·万象，英文名是InternVL，是由上海人工智能实验室、清华大学及多家合作单位联合开发的多模态大语言模型。"
     ),
     stop_words=["<|im_end|>"],
     mm_plugin=get_mm_plugin(name="intern_vl", image_token="<image>", video_token="<video>"),
+)
+
+register_template(
+    name="intern_vl_think",
+    format_user=StringFormatter(slots=["<|im_start|>user\n{{content}}<|im_end|>\n<|im_start|>assistant\n"]),
+    format_assistant=StringFormatter(slots=["{{content}}<|im_end|>\n"]),
+    format_system=StringFormatter(slots=["<|im_start|>system\n{{content}}<|im_end|>\n"]),
+    format_prefix=EmptyFormatter(slots=[{"bos_token"}]),
+    default_system=(
+        # "你是书生·万象，英文名是InternVL，是由上海人工智能实验室、清华大学及多家合作单位联合开发的多模态大语言模型。"
+    ),
+    stop_words=["<|im_end|>"],
+    mm_plugin=get_mm_plugin(name="intern_vl", image_token="<image>", video_token="<video>"),
+    template_class=ReasoningTemplate,
 )
 
 
@@ -2199,4 +2213,20 @@ register_template(
     name="ziya",
     format_user=StringFormatter(slots=["<human>:{{content}}\n<bot>:"]),
     format_assistant=StringFormatter(slots=["{{content}}\n"]),
+)
+
+register_template(
+    name="smolvlm",  # 模板名称，在配置中使用
+    format_user=StringFormatter(
+        slots=["<|im_start|>User: {{content}}<end_of_utterance>\nAssistant:"]
+    ),
+    format_assistant=StringFormatter(slots=[" {{content}}<end_of_utterance>\n"]),
+    format_system=StringFormatter(slots=["<|im_start|>System: {{content}}<end_of_utterance>\n"]),
+    # format_prefix=EmptyFormatter(slots=["<|im_start|>"]),  # 对话前缀
+    stop_words=["<end_of_utterance>"],  # 停止词
+    # 多模态插件配置
+    mm_plugin=get_mm_plugin(
+        name="smolvlm",
+        image_token="<image>",
+    )
 )

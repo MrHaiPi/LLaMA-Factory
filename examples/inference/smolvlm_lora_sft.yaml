@@ -1,0 +1,12 @@
+model_name_or_path: /home/xiarui/.cache/modelscope/hub/models/HuggingFaceTB/SmolVLM-500M-Instruct
+adapter_name_or_path: /home/xiarui/nas/projects/LLaMA-Factory/saves/smolvlm_500m_instruct_lora_sft_20251202_gbs32_lr1e-4_ep30_lk128/checkpoint-600
+template: smolvlm
+finetuning_type: lora
+infer_backend: huggingface  # choices: [huggingface, vllm, sglang]
+trust_remote_code: true
+vllm_enforce_eager: true
+image_max_pixels: 1048576 # 512 * 512 = 262144; 1024 * 1024 = 1048576
+video_max_pixels: 16384
+
+
+

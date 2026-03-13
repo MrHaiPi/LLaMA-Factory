@@ -1,0 +1,13 @@
+### Note: DO NOT use quantized model or quantization_bit when merging lora adapters
+
+### model
+model_name_or_path: /home/xiarui/.cache/modelscope/hub/models/OpenGVLab/InternVL3_5-1B-HF
+adapter_name_or_path: /home/xiarui/nas/projects/LLaMA-Factory/saves/intern_vl3_5_1b_thinking_lora_sft_20251216_gbs32_lr1e-4_ep20_lk32
+template: intern_vl_think
+trust_remote_code: true
+
+### export
+export_dir: /home/xiarui/nas/projects/LLaMA-Factory/output/intern_vl3_5_1b_thinking_lora_sft_20251216_gbs32_lr1e-4_ep20_lk32
+export_size: 5
+export_device: cpu  # choices: [cpu, auto]
+export_legacy_format: false
